@@ -1,0 +1,22 @@
+{
+    "tabs": [
+      {
+        "title": "Tab 1",
+        "content": "This is the content for Tab 1. It can contain any text or HTML content."
+      },
+      {
+        "title": "Tab 2",
+        "content": "This is the content for Tab 2. It can contain any text or HTML content."
+      },
+      {
+        "title": "Tab 3",
+        "content": "This is the content for Tab 3. It can contain any text or HTML content."
+      }
+    ],
+    "images": [
+      "https://via.placeholder.com/150",
+      "https://via.placeholder.com/150",
+      "https://via.placeholder.com/150"
+    ]
+  }
+  
