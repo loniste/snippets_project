@@ -60,30 +60,7 @@
 
         const detailsPanel = document.getElementById('detailsPanel');
 
-        fetch('details.html')
-            .then(response => response.text())
-            .then(htmlContent => {
-                detailsPanel.innerHTML = htmlContent;
-                detailsPanel.style.display = 'block';
 
-                // Dynamically create the script element
-                const script = document.createElement('script');
-                script.src = 'details_script.js'; // External script file
-                script.onload = () => {
-                    console.log('Script loaded and executed.');
-                };
-                script.onerror = (error) => {
-                    console.error('Error loading script:', error);
-                };
-
-                // Append the script to the document body to ensure it is executed
-                document.body.appendChild(script);
-            })
-            .catch(error => {
-                console.error('Error loading details.html:', error);
-                detailsPanel.innerHTML = '<p>Failed to load details content.</p>';
-                detailsPanel.style.display = 'block';
-            });
 
 
 
@@ -128,6 +105,32 @@
                                 searchBox.value = item.tags.split(',')[0].trim();
                                 autocompleteResults.innerHTML = '';
                                 autocompleteResults.style.display = 'none';
+
+
+                                fetch('details.html')
+                                    .then(response => response.text())
+                                    .then(htmlContent => {
+                                        detailsPanel.innerHTML = htmlContent;
+                                        detailsPanel.style.display = 'block';
+
+                                        // Dynamically create the script element
+                                        const script = document.createElement('script');
+                                        script.src = 'details_script.js'; // External script file
+                                        script.onload = () => {
+                                            console.log('Script loaded and executed.');
+                                        };
+                                        script.onerror = (error) => {
+                                            console.error('Error loading script:', error);
+                                        };
+
+                                        // Append the script to the document body to ensure it is executed
+                                        document.body.appendChild(script);
+                                    })
+                                    .catch(error => {
+                                        console.error('Error loading details.html:', error);
+                                        detailsPanel.innerHTML = '<p>Failed to load details content.</p>';
+                                        detailsPanel.style.display = 'block';
+                                    });
 
 
                             });
