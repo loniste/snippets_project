@@ -183,6 +183,6 @@ app.post('/submit-component', upload.fields([{ name: 'pics_1' }, { name: 'pics_2
 });
 
 // Start the server
-app.listen(port, () => {
+app.listen(3000,'0.0.0.0', () => {
   console.log(`Server running at http://localhost:${port}`);
 });
