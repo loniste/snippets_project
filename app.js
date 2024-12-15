@@ -3,7 +3,9 @@ const app = express();
 const port = 3000;
 const db = require('./db');
 const path = require('path');
+const bodyParser = require('body-parser');
 
+app.use(bodyParser.json());
 // Set up the view engine (if you want to use dynamic rendering)
 app.set('view engine', 'ejs');
 app.use('/images', express.static(path.join(__dirname, 'images')));
@@ -90,6 +92,64 @@ app.get('/', (req, res) => {
     }
   });
 });
+app.get('/new', (req, res) => {
+  res.render('new', {});
+});
+app.post('/submit-component', (req, res) => {
+  const formData = req.body;
+  // Insert into components table
+  const componentData = {
+      name: formData.name,
+      tags: formData.tags.join(', '),
+      programming_language: formData.programming_langage,
+  };
+
+  db.query('INSERT INTO components SET ?', componentData, (err, componentResult) => {
+      if (err) {
+          console.error('Error inserting into components table:', err);
+          return res.status(500).send('Error saving component data.');
+      }
+      const componentId = componentResult.insertId;
+
+
+       // Insert into component_pics table
+          if (formData.pics && formData.pics.length > 0) {
+            const picValues = formData.pics.map(picPath => [componentId, picPath]);
+            db.query('INSERT INTO component_pics (component_id, pic_path) VALUES ?', [picValues], (picErr) => {
+                if(picErr){
+                    console.error('Error inserting into component_pics table:', picErr);
+                    return res.status(500).send('Error saving component pics.');
+                }
+                 console.log("pics inserted");
+            });
+        }
+    // Insert into component_params table
+      if(formData.params && formData.params.length > 0){
+           const paramValues = formData.params.map(param => [componentId, param.param, param.desc, param.required]);
+          db.query('INSERT INTO component_params (component_id, param, description, required) VALUES ?', [paramValues], (paramErr) => {
+              if (paramErr) {
+                  console.error('Error inserting into component_params table:', paramErr);
+                  return res.status(500).send('Error saving component params.');
+              }
+              console.log("params inserted");
+          });
+        }
+    // Insert into component_snippets table
+    if (formData.snippets && formData.snippets.length > 0) {
+          const snippetValues = formData.snippets.map(snippet => [componentId, snippet.file_name, snippet.snippet]);
+          db.query('INSERT INTO component_snippets (component_id, file_name, snippet) VALUES ?', [snippetValues], (snippetErr) => {
+            if (snippetErr) {
+                console.error('Error inserting into component_snippets table:', snippetErr);
+                return res.status(500).send('Error saving component snippets.');
+            }
+              console.log("snippets inserted");
+          });
+      }
+     res.status(200).send('Component data saved successfully.');
+  });
+});
+
+
 
 // Start the server
 app.listen(port, () => {

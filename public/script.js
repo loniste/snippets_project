@@ -68,6 +68,15 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function initializeDynamicBehavior() {
+  const mainContainer = document.getElementById('main_container');
+
+    mainContainer.addEventListener('click', function(event) {
+        if (event.target.closest('#floatingButton')) {
+            window.location.href = '/new';
+        }
+    });
+
+
   const imageList = document.getElementById('imageList');
   const tabContentContainer = document.getElementById('tabContentContainer');
   const componentContainer = document.getElementById('component-container');
