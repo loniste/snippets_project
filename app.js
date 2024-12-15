@@ -4,12 +4,29 @@ const port = 3000;
 const db = require('./db');
 const path = require('path');
 const bodyParser = require('body-parser');
+const multer = require('multer');
 
-app.use(bodyParser.json());
 // Set up the view engine (if you want to use dynamic rendering)
 app.set('view engine', 'ejs');
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/public', express.static(path.join(__dirname, 'public')));
+
+// Multer configuration for handling file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+      cb(null, path.join(__dirname, 'public', 'images')); // Save uploaded files in the "public/images" directory
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname)); // rename file to be unique
+  }
+});
+
+const upload = multer({ storage: storage });
+
+
+// Parse JSON request bodies
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Serve the main route to show the component info
 app.get('/', (req, res) => {
@@ -95,26 +112,34 @@ app.get('/', (req, res) => {
 app.get('/new', (req, res) => {
   res.render('new', {});
 });
-app.post('/submit-component', (req, res) => {
+
+app.post('/submit-component', upload.fields([{ name: 'pics_1' }, { name: 'pics_2' }, { name: 'pics_3' }, { name: 'pics_4' },
+    { name: 'pics_5' }, { name: 'pics_6' }, { name: 'pics_7' }, { name: 'pics_8' },
+    { name: 'pics_9' }, { name: 'pics_10' }]),
+    (req, res) => {
   const formData = req.body;
-  // Insert into components table
-  const componentData = {
-      name: formData.name,
-      tags: formData.tags.join(', '),
-      programming_language: formData.programming_langage,
-  };
-
-  db.query('INSERT INTO components SET ?', componentData, (err, componentResult) => {
-      if (err) {
-          console.error('Error inserting into components table:', err);
-          return res.status(500).send('Error saving component data.');
+    const files = req.files;
+      const uploadedFiles = [];
+    for (const key in files) {
+          if (Array.isArray(files[key])) {
+            for (const file of files[key]) {
+                uploadedFiles.push(`public/images/${file.filename}`);
+            }
+          }
       }
-      const componentId = componentResult.insertId;
-
-
-       // Insert into component_pics table
-          if (formData.pics && formData.pics.length > 0) {
-            const picValues = formData.pics.map(picPath => [componentId, picPath]);
+      const componentData = {
+          name: formData.name,
+          tags: formData.tags,
+          programming_language: formData.programming_language,
+      };
+    db.query('INSERT INTO components SET ?', componentData, (err, componentResult) => {
+        if (err) {
+            console.error('Error inserting into components table:', err);
+            return res.status(500).send('Error saving component data.');
+        }
+        const componentId = componentResult.insertId;
+          if (uploadedFiles && uploadedFiles.length > 0) {
+            const picValues = uploadedFiles.map(picPath => [componentId, picPath]);
             db.query('INSERT INTO component_pics (component_id, pic_path) VALUES ?', [picValues], (picErr) => {
                 if(picErr){
                     console.error('Error inserting into component_pics table:', picErr);
@@ -123,33 +148,39 @@ app.post('/submit-component', (req, res) => {
                  console.log("pics inserted");
             });
         }
-    // Insert into component_params table
-      if(formData.params && formData.params.length > 0){
-           const paramValues = formData.params.map(param => [componentId, param.param, param.desc, param.required]);
-          db.query('INSERT INTO component_params (component_id, param, description, required) VALUES ?', [paramValues], (paramErr) => {
-              if (paramErr) {
-                  console.error('Error inserting into component_params table:', paramErr);
-                  return res.status(500).send('Error saving component params.');
-              }
-              console.log("params inserted");
-          });
-        }
+      let params;
+        let snippets;
+       try {
+           params = JSON.parse(formData.params);
+           snippets = JSON.parse(formData.snippets);
+       } catch(e){
+           console.error("Error parsing json", e);
+           return res.status(500).send('Error saving component data.');
+       }
+      if(params && params.length > 0){
+             const paramValues = params.map(param => [componentId, param.param, param.desc, param.required]);
+            db.query('INSERT INTO component_params (component_id, param, description, required) VALUES ?', [paramValues], (paramErr) => {
+                if (paramErr) {
+                    console.error('Error inserting into component_params table:', paramErr);
+                   return res.status(500).send('Error saving component params.');
+                }
+                console.log("params inserted");
+            });
+          }
     // Insert into component_snippets table
-    if (formData.snippets && formData.snippets.length > 0) {
-          const snippetValues = formData.snippets.map(snippet => [componentId, snippet.file_name, snippet.snippet]);
+    if (snippets && snippets.length > 0) {
+          const snippetValues = snippets.map(snippet => [componentId, snippet.file_name, snippet.snippet]);
           db.query('INSERT INTO component_snippets (component_id, file_name, snippet) VALUES ?', [snippetValues], (snippetErr) => {
             if (snippetErr) {
                 console.error('Error inserting into component_snippets table:', snippetErr);
-                return res.status(500).send('Error saving component snippets.');
+                 return res.status(500).send('Error saving component snippets.');
             }
               console.log("snippets inserted");
           });
       }
-     res.status(200).send('Component data saved successfully.');
-  });
+       return res.status(200).json({ message: 'Component data saved successfully.', formData: formData });
+   });
 });
-
-
 
 // Start the server
 app.listen(port, () => {
