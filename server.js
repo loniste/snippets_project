@@ -1,18 +1,19 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const db = require('./db');
 
 const app = express();
 const PORT = 3000;
 
 // Middleware to serve static files
 app.use(express.static('public'));
-app.use('/database', express.static(path.join(__dirname, 'database')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 
 // Endpoint to fetch values from JSON files
 app.get('/get-values', (req, res) => {
-    const mainFolder = path.join(__dirname, 'database');
+    const mainFolder = path.join(__dirname, 'images');
     const targetKey = req.query.key.toLowerCase(); // Convert user input to lowercase
     let results = [];
 
