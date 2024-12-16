@@ -39,7 +39,9 @@ const updateComponentInfo = async (tag) => {
     });
     document.querySelectorAll('.tab-content pre code').forEach(snippetElement => {
       originalSnippetContents.set(snippetElement, snippetElement.innerHTML);
+      Prism.highlightElement(snippetElement);
     });
+    
 
 
 
@@ -70,11 +72,11 @@ document.addEventListener('DOMContentLoaded', function () {
 function initializeDynamicBehavior() {
   const mainContainer = document.getElementById('main_container');
 
-    mainContainer.addEventListener('click', function(event) {
-        if (event.target.closest('#floatingButton')) {
-            window.location.href = '/new';
-        }
-    });
+  mainContainer.addEventListener('click', function (event) {
+    if (event.target.closest('#floatingButton')) {
+      window.location.href = '/new';
+    }
+  });
 
 
   const imageList = document.getElementById('imageList');
@@ -85,22 +87,13 @@ function initializeDynamicBehavior() {
     componentContainer.addEventListener('click', function (event) {
       if (event.target.classList.contains('copy-button')) {
         // Locate the <code> element
-            const codeElement = event.target.nextElementSibling.querySelector('code');
-            if (codeElement) {
-                const snippet = codeElement.textContent;
-
-
-
-                //securedCopyToClipboard(snippet)
-                unsecuredCopyToClipboard(snippet)
-
-
-
-
-
-
-             }
-       }
+        const codeElement = event.target.nextElementSibling.querySelector('code');
+        if (codeElement) {
+          const snippet = codeElement.textContent;
+          //securedCopyToClipboard(snippet)
+          unsecuredCopyToClipboard(snippet)
+        }
+      }
     });
   }
 
@@ -171,6 +164,7 @@ function initializeDynamicBehavior() {
           } else {
             snippetElement.innerHTML = snippetElement.innerHTML.replace(new RegExp(escapedParamName, 'g'), paramName);
           }
+          Prism.highlightElement(snippetElement);
         });
       });
     }
@@ -198,13 +192,13 @@ function unsecuredCopyToClipboard(text) {
   document.body.removeChild(textArea);
 }
 
-function securedCopyToClipboard(text){
+function securedCopyToClipboard(text) {
   navigator.clipboard.writeText(text).then(() => {
     //console.log(snippet);
     alert('Snippet copied to clipboard!');
- })
-.catch(err => {
-console.error('Failed to copy snippet: ', err);
-alert("Failed to copy snippet");
-});
+  })
+    .catch(err => {
+      console.error('Failed to copy snippet: ', err);
+      alert("Failed to copy snippet");
+    });
 }

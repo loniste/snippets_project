@@ -1,6 +1,6 @@
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 
-const connection = mysql.createConnection({
+const connection = mysql.createPool({
   host: '195.200.14.76',
   port: 3306,
   user: 'loniste',
@@ -8,11 +8,5 @@ const connection = mysql.createConnection({
   database: 'snippets_db',
 });
 
-connection.connect(err => {
-  if (err) {
-    console.error('Error connecting to the database:', err);
-    return;
-  }
-  console.log('Connected to the database!');
-});
+
 module.exports = connection;
