@@ -88,18 +88,22 @@ function initializeDynamicBehavior() {
             const codeElement = event.target.nextElementSibling.querySelector('code');
             if (codeElement) {
                 const snippet = codeElement.textContent;
-                navigator.clipboard.writeText(snippet).then(() => {
-                        //console.log(snippet);
-                        alert('Snippet copied to clipboard!');
-                     })
-                 .catch(err => {
-                    console.error('Failed to copy snippet: ', err);
-                    alert("Failed to copy snippet");
-                });
+
+
+
+                //securedCopyToClipboard(snippet)
+                unsecuredCopyToClipboard(snippet)
+
+
+
+
+
+
              }
        }
     });
   }
+
 
   if (imageList) {
     imageList.addEventListener('click', function (event) {
@@ -173,4 +177,34 @@ function initializeDynamicBehavior() {
   });
 
 
+}
+
+function unsecuredCopyToClipboard(text) {
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  try {
+    document.execCommand('copy');
+    alert('Snippet copied to clipboard!');
+
+
+  } catch (err) {
+    console.error('Unable to copy to clipboard', err);
+    alert("Failed to copy snippet");
+
+  }
+  document.body.removeChild(textArea);
+}
+
+function securedCopyToClipboard(text){
+  navigator.clipboard.writeText(text).then(() => {
+    //console.log(snippet);
+    alert('Snippet copied to clipboard!');
+ })
+.catch(err => {
+console.error('Failed to copy snippet: ', err);
+alert("Failed to copy snippet");
+});
 }
