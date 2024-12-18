@@ -1,0 +1,25 @@
+ <!-- Dynamic Tabs -->
+ <ul class="nav nav-pills mb-3 tabs" id="tabs" role="tablist">
+    <% if (tabs && tabs.length> 0) { %>
+        <% tabs.forEach((tab, index)=> { %>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link <%= index === 0 ? 'active' : '' %>"
+                    id="tab-<%= tab.id %>" data-bs-toggle="pill"
+                    data-bs-target="#tab-content-<%= tab.id %>" type="button" role="tab"
+                    aria-controls="tab-content-<%= tab.id %>"
+                    aria-selected="<%= index === 0 ? 'true' : 'false' %>">
+                    <%= tab.name %>
+                </button>
+            </li>
+            <% }); %>
+                <% } %>
+</ul>
+
+<!-- Tab content -->
+ <div class="tab-content-container" id="tabContentContainer">
+    <% if (tabs && tabs.length> 0 && snippets && snippets.length > 0) { %>
+        <% tabs.forEach((tab, index)=> { %>
+            <%- include('component_content', {snippet: snippets[index], tab: tab, index: index }) %>
+          <% }); %>
+    <% } %>
+</div>

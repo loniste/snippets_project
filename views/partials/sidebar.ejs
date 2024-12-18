@@ -1,0 +1,23 @@
+<div class="sidebar" id="sidebar">
+    <!-- 
+    <ul>
+        <li><a href="#" class="active">Dashboard</a></li>
+        <li><a href="#">Components</a></li>
+        <li><a href="#">Settings</a></li>
+        <li><a href="#">Profile</a></li>
+    </ul>
+    Search Input -->
+    <div class="sidebar-params">
+        <% if (params && params.length> 0) { %>
+            <% params.forEach(param=> { %>
+                <div class="param-input">
+                    <label for="<%= param.param %>">
+                        <%= param.desc %>
+                    </label>
+                    <input type="text" id="<%= param.param %>" name="<%= param.param %>"
+                        placeholder="<%= param.param %>">
+                </div>
+                <% }); %>
+                    <% } %>
+    </div>
+</div>

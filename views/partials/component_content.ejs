@@ -1,0 +1,6 @@
+<div class="tab-content <%= index === 0 ? 'active' : '' %>"
+    id="tab-content-<%= tab.id %>" role="tabpanel"
+    aria-labelledby="tab-<%= tab.id %>">
+    <button class="copy-button">Copy</button>
+   <pre><code id="snippet-element" class="language-kotlin" data-original-snippet="<%= snippet.snippet %>"><%= snippet.snippet %></code></pre>
+</div>

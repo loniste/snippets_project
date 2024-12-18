@@ -29,10 +29,13 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 // Main route for component information
-app.get('/', componentController.getComponentInfo);
+app.get('/', componentController.getAllComponents);
+
+app.get('/component-details', componentController.getComponentInfo);
 
 // Route to render new component creation form
 app.get('/new', componentController.getNewFormComponent);
+
 
 // Route to handle component submission
 app.post('/submit-component',

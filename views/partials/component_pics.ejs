@@ -1,0 +1,5 @@
+<% if(pics && pics.length> 0) { %>
+    <% pics.forEach(pic=> { %>
+         <img src="<%= pic.pic_path %>" alt="Component Image" data-tab="image-<%= pic.id %>">
+     <% }); %>
+<% } %>
