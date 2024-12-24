@@ -21,9 +21,17 @@ function initializeDynamicBehavior() {
   const mainContainer = document.getElementById('main_container');
 
   mainContainer.addEventListener('click', function (event) {
+    console.log("called");
+
     if (event.target.closest('#floatingButton')) {
       window.location.href = '/new';
-    }
+    }else if (event.target.closest('#edit_FloatingButton')) {
+      console.log("called2");
+      const editButton = event.target.closest('#edit_FloatingButton')
+      const componentId = editButton.getAttribute('data-component-id');
+      window.location.href = `/update-component?componentId=${componentId}`;
+  }
+
   });
 
 

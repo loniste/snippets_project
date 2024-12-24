@@ -31,10 +31,13 @@ const upload = multer({ storage: storage });
 // Main route for component information
 app.get('/', componentController.getAllComponents);
 
-app.get('/component-details', componentController.getComponentInfo);
+app.get('/component-details', componentController.getComponentDetails );
+app.get('/update-component', componentController.getUpdateComponent);
 
 // Route to render new component creation form
 app.get('/new', componentController.getNewFormComponent);
+app.post('/update-component', upload.array('new_pics'), componentController.postUpdateComponent);
+
 
 
 // Route to handle component submission
